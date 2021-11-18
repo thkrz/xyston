@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: xyston
+Version: 0.0.1
+Summary: Artificial intelligence toolkit
+Home-page: https://github.com/thkrz/xyston
+Author: Thomas Kreuzer
+Author-email: thomas.kreuzer@uni-wuerzburg.de
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operation System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# xyston
+

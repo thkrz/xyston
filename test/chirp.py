@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def chirp1d_1():
+def chirp11():
     h = np.zeros(128)
     for t in range(64):
         h[t] = np.cos(2.0 * np.pi * t * 6.0 / 128.0)
@@ -12,7 +12,7 @@ def chirp1d_1():
     return h
 
 
-def chirp1d_2():
+def chirp12():
     h = np.zeros(256)
     for t in range(256):
         h[t] = np.cos(2.0 * np.pi * (10.0 + t / 7.0) * t / 256.0) + np.cos(
@@ -25,7 +25,7 @@ def chirp1d_2():
     return h
 
 
-def chirp2d():
+def chirp21():
     h = np.zeros((64, 16))
     for x in range(64):
         h[x, :] = 10.0 * np.cos(2.0 * np.pi * 4.0 * x / 64.0)
@@ -36,9 +36,22 @@ def chirp2d():
     return h
 
 
+def chirp22():
+    n = 64
+    m = n // 2
+    h = np.zeros((n, n))
+    for x in range(n):
+        f = 10.0 * np.cos(2.0 * np.pi * (0.15 * x) * x / 64.0)
+        for y in range(n):
+            xx = (x - m) ** 2
+            yy = (y - m) ** 2
+            h[x, y] = f * np.exp(-0.5 * (xx / n + yy / m))
+    return h
+
+
 if __name__ == "__main__":
     import sys
 
     assert len(sys.argv) == 2, "missing signal identifier"
-    h = {"1d-1": chirp1d_1, "1d-2": chirp1d_2, "2d": chirp2d}[sys.argv[1]]()
-    np.savetxt(sys.stdout.buffer, h, fmt="%11.6f")
+    h = {"11": chirp11, "12": chirp12, "21": chirp21, "22": chirp22}[sys.argv[-1]]()
+    np.savetxt(sys.stdout.buffer, h, fmt="%11.6g")

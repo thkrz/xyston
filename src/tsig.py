@@ -1,23 +1,17 @@
 import numpy as np
 import xyston
 
+from pathlib import Path
 
-def chirp22():
-    n = 64
-    m = n // 2
-    h = np.zeros((n, n))
-    for x in range(n):
-        f = 10.0 * np.cos(2.0 * np.pi * (0.15 * x) * x / 64.0)
-        for y in range(n):
-            xx = (x - m) ** 2
-            yy = (y - m) ** 2
-            h[x, y] = f * np.exp(-0.5 * (xx / n + yy / m))
-    return h
-
+train_dir = Path("../train")
 
 if __name__ == "__main__":
-    h = chirp22()
-    dost = xyston.DOST(h)
+    pos = []
+    for f in (train_dir / "p").iterdir():
+        im = np.loadtxt(f)
+        dost = xyston.DOST(im)
+        pos.append(list(dost))
 
-    for im in dost:
-        print(im)
+    pos = np.array(pos)
+    print(pos.shape)
+

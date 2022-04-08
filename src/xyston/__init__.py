@@ -1,17 +1,23 @@
+import numpy as np
+
 from . import pyst
 
 
-class DOST:
+class dost:
     def __init__(self, im):
         self.N = len(im)
-        self.S = pyst.dst2(im)
+        self.n = 2 * int(np.log2(self.N)) - 1
+        self.shape = (self.N, self.N, self.n, self.n)
+        self.size = self.N**2 * self.n**2
+        self.base = pyst.dst2(im)
 
     def __getitem__(self, pos):
-        x, y = pos
-        assert 0 <= x < self.N and 0 <= y < self.N
-        return pyst.freqdomain(self.S, x, y)
+        x, y, vx, vy = pos
+        S = pyst.freqdomain(self.base, x, y)
+        return S[vx, vy]
 
-    def __iter__(self):
-        for x in range(self.N):
-            for y in range(self.N):
-                yield self.__getitem__((x, y))
+    def srange(self, s):
+        start = s.start or 0
+        stop = s.stop or self.N
+        step = s.step or 1
+        return np.arange(start, stop, step)

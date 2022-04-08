@@ -3,21 +3,15 @@ import numpy as np
 from . import pyst
 
 
-class dost:
+class dost2:
     def __init__(self, im):
-        self.N = len(im)
-        self.n = 2 * int(np.log2(self.N)) - 1
-        self.shape = (self.N, self.N, self.n, self.n)
-        self.size = self.N**2 * self.n**2
-        self.base = pyst.dst2(im)
+        self._N = len(im)
+        self._n = 2 * int(np.log2(self._N)) - 1
+        self._i = pyst.dst2(im)
 
-    def __getitem__(self, pos):
-        x, y, vx, vy = pos
-        S = pyst.freqdomain(self.base, x, y)
-        return S[vx, vy]
-
-    def srange(self, s):
-        start = s.start or 0
-        stop = s.stop or self.N
-        step = s.step or 1
-        return np.arange(start, stop, step)
+    def __array__(self, dtype=complex):
+        a = np.zeros((self._N, self._N, self._n, self._n), dtype=dtype)
+        for x in range(self._N):
+            for y in range(self._N):
+                a[x, y, :, :] = pyst.freqdomain(self._i, x, y)
+        return a

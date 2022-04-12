@@ -117,9 +117,8 @@ class CReLU(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         r = F.relu(input[:, 0], inplace=self.inplace)
         i = F.relu(input[:, 1], inplace=self.inplace)
-        arg = ((r == 0) & (i == 0)).int()
-        X = torch.stack((r * arg, i * arg), dim=1)
-        return X
+        arg = ((r > 0) & (i > 0)).int()
+        return torch.stack((r * arg, i * arg), dim=1)
 
     def extra_repr(self) -> str:
         inplace_str = "inplace=True" if self.inplace else ""

@@ -38,17 +38,17 @@ class LASLNNet(nn.Module):
         super(LASLNNet, self).__init__()
         self.conv = nn.Sequential(
             xy.CConv4d(1, 2, kernel_size=2),
-            nn.ReLU(inplace=True),
+            xy.CReLU(inplace=True),
             xy.CConv4d(2, 4, kernel_size=2),
-            nn.ReLU(inplace=True),
+            xy.CReLU(inplace=True),
             xy.CConv4d(4, 8, kernel_size=2),
-            nn.ReLU(inplace=True),
+            xy.CReLU(inplace=True),
             xy.CConv4d(8, 16, kernel_size=2),
-            nn.ReLU(inplace=True),
+            xy.CReLU(inplace=True),
             xy.CConv4d(16, 32, kernel_size=2),
-            nn.ReLU(inplace=True),
+            xy.CReLU(inplace=True),
             xy.CConv4d(32, 64, kernel_size=2),
-            nn.ReLU(inplace=True),
+            xy.CReLU(inplace=True),
         )
         n = 2 * int(np.log2(dim)) - 7
         N = 64 * (dim - 6) ** 2 * n**2
@@ -57,7 +57,6 @@ class LASLNNet(nn.Module):
     def forward(self, x: Tensor) -> Tensor:
         x = self.conv(x)
         x = x.flatten(start_dim=2, end_dim=-1)
-        print(x.shape)
         x = self.fc(x)
         return x
 
@@ -65,8 +64,8 @@ class LASLNNet(nn.Module):
 def test_cnn():
     h = chirp()
     S = Dost2(h)
-    x = S.totensor()
-    print(x.shape)
+    X = S.totensor()
+    Y = xy.CReLU(inplace=True).forward(X)
     lnet = LASLNNet(h.shape[0])
-    y = lnet.forward(x)
-    print(y.shape)
+    Y = lnet.forward(X)
+    print(Y)

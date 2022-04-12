@@ -90,9 +90,9 @@ class _CConvNd(nn.Module):
         super(_CConvNd, self).__init__()
         self.conv = cls(*args, **kwargs)
 
-    def forward(self, x: Tensor) -> Tensor:
-        m_r = self.conv(x[:, 0])
-        m_i = self.conv(x[:, 1])
+    def forward(self, input: Tensor) -> Tensor:
+        m_r = self.conv(input[:, 0])
+        m_i = self.conv(input[:, 1])
         r = m_r - m_i
         i = m_i + m_r
         return torch.stack((r, i), dim=1)
@@ -104,3 +104,23 @@ def CConv3d(*args, **kwargs):
 
 def CConv4d(*args, **kwargs):
     return _CConvNd(Conv4d, *args, **kwargs)
+
+
+class CReLU(nn.Module):
+    __constants__ = ["inplace"]
+    inplace: bool
+
+    def __init__(self, inplace: bool = False):
+        super(CReLU, self).__init__()
+        self.inplace = inplace
+
+    def forward(self, input: Tensor) -> Tensor:
+        r = F.relu(input[:, 0], inplace=self.inplace)
+        i = F.relu(input[:, 1], inplace=self.inplace)
+        arg = ((r == 0) & (i == 0)).int()
+        X = torch.stack((r * arg, i * arg), dim=1)
+        return X
+
+    def extra_repr(self) -> str:
+        inplace_str = "inplace=True" if self.inplace else ""
+        return inplace_str

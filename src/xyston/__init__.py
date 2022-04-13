@@ -10,14 +10,11 @@ class Dost2:
         self._b = pyst.dst2(im)
 
     def __array__(self, dtype=complex):
-        a = np.zeros((self._N, self._N, self._n, self._n), dtype=complex)
+        arr = np.zeros((self._N, self._N, self._n, self._n), dtype=dtype)
         for x in range(self._N):
             for y in range(self._N):
-                a[x, y, :, :] = pyst.freqdomain(self._b, x, y)
-        if dtype == complex:
-            return a
-        a = np.array([a])
-        return np.stack((a.real, a.imag)).astype(dtype)
+                arr[x, y, :, :] = pyst.freqdomain(self._b, x, y)
+        return arr
 
     def __iter__(self):
         for x in range(self._N):
@@ -28,8 +25,20 @@ class Dost2:
         return self._N
 
 
-def train_cnn():
+def cmplx(arr):
+    pass
+
+
+def real(arr):
+    if not isinstance(arr, np.ndarray):
+        arr = arr.__array__()
+    arr = np.array([arr])
+    return np.stack((arr.real, arr.imag)).astype(float)
+
+
+def xyston_main():
     a = np.zeros((8, 8))
     S = Dost2(a)
-    b = np.array(S, dtype=float)
-    print(b.shape)
+    c = real(S)
+    print(c.shape)
+    return 0

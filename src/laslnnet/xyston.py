@@ -117,9 +117,31 @@ class CReLU(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         r = F.relu(input[:, 0], inplace=self.inplace)
         i = F.relu(input[:, 1], inplace=self.inplace)
-        arg = ((r > 0) & (i > 0)).int()
-        return torch.stack((r * arg, i * arg), dim=1)
+        if self.inplace:
+            return input
+        return torch.stack((r, i), dim=1)
 
     def extra_repr(self) -> str:
         inplace_str = "inplace=True" if self.inplace else ""
         return inplace_str
+
+
+class zReLU(nn.Module):
+    def __init__(self):
+        super(CReLU, self).__init__()
+
+    def forward(self, input: Tensor) -> Tensor:
+        r = input[:, 0]
+        i = input[:, 1]
+        arg = ((r > 0) & (i > 0)).int()
+        return torch.stack((r * arg, i * arg), dim=1)
+
+
+class Abs(nn.Module):
+    def __init__(self) -> None:
+        super(Abs, self).__init__()
+
+    def forward(self, input: Tensor) -> Tensor:
+        r = input[:, 0]
+        i = input[:, 1]
+        return r**2 + i**2

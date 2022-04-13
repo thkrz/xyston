@@ -4,7 +4,6 @@ import numpy as np
 
 from torch import Tensor
 
-from .chirp import chirp
 from . import pyst
 from . import xyston as xy
 
@@ -58,16 +57,5 @@ class LASLNNet(nn.Module):
         return fc(x)
 
 
-def test_cnn():
-    batch = []
-    h = chirp()[16:-16, 16:-16]
-    S = Dost2(h)
-    X = np.array(S, dtype=float)
-    batch.append(X)
-
-    X = np.array(batch)
-    X = torch.Tensor(X)
-
-    lnet = LASLNNet()
-    Y = lnet(X)
-    print(Y)
+def train_cnn():
+    pass

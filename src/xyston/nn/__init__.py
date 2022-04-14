@@ -5,8 +5,9 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch.nn.common_types import _size_4_t
 from torch.nn.modules.utils import _quadruple
-
 from typing import Optional, Union
+
+from . import functional as G
 
 
 class Conv4d(nn.modules.conv._ConvNd):
@@ -46,7 +47,7 @@ class Conv4d(nn.modules.conv._ConvNd):
     def _conv_forward(
         self, input: Tensor, weight: Tensor, bias: Optional[Tensor]
     ) -> Tensor:
-        b, c_i, l_i, d_i, h_i, w_i = input.shape
+        l_i = input.shape[2]
         l_k = self.kernel_size[0]
         if isinstance(self.padding, tuple):
             pad_ = self.padding[0]
@@ -67,7 +68,7 @@ class Conv4d(nn.modules.conv._ConvNd):
                 if n < 0 or n >= l_o:
                     continue
                 f = F.conv3d(
-                    input[:, :, j, :].view(b, c_i, d_i, h_i, w_i),
+                    input[:, :, j, :],
                     weight[:, :, i, :, :],
                     bias,
                     self.stride[1:],
@@ -137,11 +138,9 @@ class zReLU(nn.Module):
         return torch.stack((r * arg, i * arg), dim=1)
 
 
-class Abs(nn.Module):
+class Modulus(nn.Module):
     def __init__(self) -> None:
-        super(Abs, self).__init__()
+        super(Modulus, self).__init__()
 
     def forward(self, input: Tensor) -> Tensor:
-        r = input[:, 0]
-        i = input[:, 1]
-        return r**2 + i**2
+        return G.modulus(input, 1)

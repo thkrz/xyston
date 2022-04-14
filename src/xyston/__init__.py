@@ -1,44 +1,38 @@
 import numpy as np
+import torch
 
-from . import pyst
-
-
-class Dost2:
-    def __init__(self, im):
-        self._N = len(im)
-        self._n = 2 * int(np.log2(self._N)) - 1
-        self._b = pyst.dst2(im)
-
-    def __array__(self, dtype=complex):
-        arr = np.zeros((self._N, self._N, self._n, self._n), dtype=dtype)
-        for x in range(self._N):
-            for y in range(self._N):
-                arr[x, y, :, :] = pyst.freqdomain(self._b, x, y)
-        return arr
-
-    def __iter__(self):
-        for x in range(self._N):
-            for y in range(self._N):
-                yield pyst.freqdomain(self._b, x, y)
-
-    def __len__(self):
-        return self._N
+from . import dataset
+from . import signal
+from .nn import model
 
 
-def cmplx(arr):
-    pass
+def batch_size(n, min_size=2, max_size=32):
+    for i in range(max_size, min_size - 1, -1):
+        if n % i == 0:
+            return i
+    return 0
 
 
-def real(arr):
-    if not isinstance(arr, np.ndarray):
-        arr = arr.__array__()
-    arr = np.array([arr])
-    return np.stack((arr.real, arr.imag)).astype(float)
+def train(ims, lbl):
+    m = model.LASLNet45()
+    y = m(ims)
+    print(y.shape)
 
 
 def xyston_main():
-    a = np.zeros((8, 8))
-    S = Dost2(a)
-    c = real(S)
-    print(c.shape)
+    lbl, ims = dataset.load()
+    N = ims.shape[0]
+    b = batch_size(N)
+    lbl = lbl.reshape(-1, b)
+    batch = []
+    n = 0
+    for im in ims:
+        batch.append(signal.real(signal.dost2(im)))
+        if len(batch) == b:
+            a = torch.tensor(np.array(batch))
+            l = lbl[n]
+            train(a, l)
+            n += 1
+            batch = []
+            break
     return 0

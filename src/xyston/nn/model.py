@@ -1,13 +1,12 @@
 import torch.nn as nn
-
 from torch import Tensor
 
-from . import xyston as xy
+from .. import nn as xy
 
 
-class LASLNNet34(nn.Module):
+class LASLNet34(nn.Module):
     def __init__(self) -> None:
-        super(LASLNNet34, self).__init__()
+        super(LASLNet34, self).__init__()
         self.conv = nn.Sequential(
             xy.CConv3d(1024, 2048, kernel_size=3, stride=2),
             xy.CReLU(),
@@ -27,9 +26,9 @@ class LASLNNet34(nn.Module):
         return fc(input)
 
 
-class LASLNNet45(nn.Module):
+class LASLNet45(nn.Module):
     def __init__(self) -> None:
-        super(LASLNNet45, self).__init__()
+        super(LASLNet45, self).__init__()
         self.conv = nn.Sequential(
             xy.CConv4d(1, 32, kernel_size=3, stride=2),
             xy.CReLU(),

@@ -1,25 +1,30 @@
 import numpy as np
-import random
 from pathlib import Path
+from torch.utils.data import Dataset
 
-_data_root = Path("/home/thk32is/work/laslds")
-_tr = {"__LASL__": 1, "__NONE__": 0}
+from . import signal
 
 
-def load(batch_size=4, split="train"):
-    path = _data_root / split
-    df = {}
-    with open(path / "map.txt") as f:
-        for ln in f:
-            s = ln.split()
-            k = s[1].strip()
-            v = s[0]
-            df[k] = v
-    keys = list(df.keys())
-    random.shuffle(keys)
-    labels, images = [], []
-    for k in keys:
-        labels.append(_tr[df[k]])
-        arr = np.loadtxt(path / (k + ".gz"))
-        images.append(arr)
-    return np.array(labels, dtype=int), np.array(images)
+class LASLDataset(Dataset):
+    def __init__(
+        self, annotations_file, img_dir, transform=None, target_transform=None
+    ):
+        with open(annotations_file) as f:
+            self.img_labels = [s.split() for s in f]
+        self.img_dir = Path(img_dir)
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __getitem__(self, i):
+        img_path = self.img_dir / (self.img_labels[i][1] + ".gz")
+        image = np.loadtxt(img_path)
+        image = signal.real(signal.dost2(image))
+        label = self.img_labels[i][0]
+        if self.transform:
+            image = self.transform(image)
+        if self.target_transform:
+            label = self.target_transform(label)
+        return image, label

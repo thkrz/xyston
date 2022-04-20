@@ -42,9 +42,12 @@ class LASLNet45(nn.Module):
             xy.CReLU(),
             nn.Flatten(start_dim=2),
             xy.CReLU(),
+            xy.Modulus(),
         )
 
     def forward(self, input: Tensor) -> Tensor:
         input = self.conv(input)
-        fc = nn.Linear(in_features=input.shape[2], out_features=1)
-        return fc(input)
+        fc = nn.Linear(in_features=input.shape[1], out_features=1, device=input.device)
+        sm = nn.Sigmoid()
+        x = sm(fc(input))
+        return x[:, 0]

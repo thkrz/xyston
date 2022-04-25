@@ -21,6 +21,7 @@ class Conv4d(nn.modules.conv._ConvNd):
         dilation: _size_4_t = 1,
         groups: int = 1,
         bias: bool = True,
+        padding_mode: str = "zeros",
         device=None,
         dtype=None,
     ) -> None:
@@ -40,7 +41,7 @@ class Conv4d(nn.modules.conv._ConvNd):
             _quadruple(0),
             groups,
             bias,
-            "zeros",
+            padding_mode,
             **factory_kwargs,
         )
 
@@ -55,12 +56,13 @@ class Conv4d(nn.modules.conv._ConvNd):
         else:
             padding_ = self.padding
             pad_ = 0 if self.padding == "valid" else -1
-        l_o = (
-            l_i
-            if pad_ < 0
-            else (l_i + 2 * pad_ - self.dilation[0] * (l_k - 1) - 1) // self.stride[0]
-            + 1
-        )
+
+        if pad_ < 0:
+            l_o = l_i
+        else:
+            l_o = (l_i + 2 * pad_ - self.dilation[0] * (l_k - 1) - 1) // self.stride[
+                0
+            ] + 1
         o_f = l_o * [None]
         for i in range(l_k):
             for j in range(l_i):
@@ -143,4 +145,4 @@ class Modulus(nn.Module):
         super(Modulus, self).__init__()
 
     def forward(self, input: Tensor) -> Tensor:
-        return G.modulus(input, 1)
+        return G.modulus(input)

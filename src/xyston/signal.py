@@ -3,9 +3,8 @@ from collections import namedtuple
 
 from . import fstpack
 
-MonogenicSignal = namedtuple(
-    "MonogenicSignal", ["curvature", "direction", "phase", "energy"]
-)
+monogenic_order = ["curvature", "direction", "phase", "energy"]
+MonogenicSignal = namedtuple("MonogenicSignal", monogenic_order)
 
 
 class MonogenicImage:

@@ -6,7 +6,7 @@ from torch.nn.common_types import _size_4_t
 from torch.nn.modules.utils import _quadruple
 from typing import Optional, Union
 
-from . import functional as F
+from .. import functional as F
 
 
 class Conv4d(nn.modules.conv._ConvNd):

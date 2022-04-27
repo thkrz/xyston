@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from . import functional as G
+from .. import functional as G
 
 
 class CReLU(nn.Module):

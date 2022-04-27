@@ -8,10 +8,17 @@ MonogenicSignal = namedtuple("MonogenicSignal", monogenic_order)
 
 
 class MonogenicImage:
-    def __init__(self, im, kernel_size=7, padding="valid", coarse=0.2, fine=0.1):
-        if not isinstance(im, np.ndarray):
-            im = im.__array__()
-        self.image = im
+    def __init__(
+        self,
+        image,
+        kernel_size: int = 7,
+        padding: str = "valid",
+        coarse: float = 0.2,
+        fine: float = 0.1,
+    ):
+        if not isinstance(image, np.ndarray):
+            image = image.__array__()
+        self.image = image
         if isinstance(padding, str):
             assert padding in ["valid"]
         self.kernel_size = kernel_size
@@ -24,9 +31,9 @@ class MonogenicImage:
         else:
             pad_ = padding
         if pad_ is None:
-            self.work = im
+            self.work = image
         else:
-            self.work = np.pad(im, kernel_size, constant_values=pad_)
+            self.work = np.pad(image, kernel_size, constant_values=pad_)
 
     def __array__(self, dtype=np.float32):
         shape = self.image.shape
@@ -66,14 +73,14 @@ class MonogenicImage:
 
 
 class DostImage:
-    def __init__(self, im):
-        if not isinstance(im, np.ndarray):
-            im = im.__array__()
-        N = len(im)
+    def __init__(self, image):
+        if not isinstance(image, np.ndarray):
+            image = image.__array__()
+        N = len(image)
         assert N != 0 and (N & (N - 1)) == 0
         self._N = N
         self._n = 2 * int(np.log2(N)) - 1
-        self.base = fstpack.dst2(im)
+        self.base = fstpack.dst2(image)
 
     def __array__(self, dtype=np.csingle):
         arr = np.zeros((self._N, self._N, self._n, self._n), dtype=dtype)

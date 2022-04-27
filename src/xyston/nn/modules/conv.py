@@ -10,6 +10,10 @@ from . import functional as F
 
 
 class Conv4d(nn.modules.conv._ConvNd):
+    __doc__ = r"""Applies a 4D convolution over an input signal composed of several input
+    planes.
+    """
+
     def __init__(
         self,
         in_channels: int,
@@ -24,6 +28,12 @@ class Conv4d(nn.modules.conv._ConvNd):
         device=None,
         dtype=None,
     ) -> None:
+        if padding_mode != "zeros":
+            raise ValueError(
+                'Only "zeros" padding mode is supported for {}'.format(
+                    self.__class__.__name__
+                )
+            )
         factory_kwargs = {"device": device, "dtype": dtype}
         kernel_size_ = _quadruple(kernel_size)
         stride_ = _quadruple(stride)

@@ -53,3 +53,10 @@ def modulus(input: Tensor) -> Tensor:
     r = input[:, 0]
     i = input[:, 1]
     return torch.sqrt(r**2 + i**2)
+
+
+def zrelu(input: Tensor) -> Tensor:
+    r = input[:, 0]
+    i = input[:, 1]
+    arg = ((r > 0) & (i > 0)).int()
+    return torch.stack((r * arg, i * arg), dim=1)

@@ -9,3 +9,10 @@ Xyston is available on PyPI:
 ```console
 $ pip install xyston
 ```
+
+## Dependencies
+
+Xyston depends on
+* [fstpack](https://github.com/thkrz/fstpack),
+* [pytorch](https://github.com/pytorch/pytorch),
+* and [numpy](https://github.com/numpy/numpy)

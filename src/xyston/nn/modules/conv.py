@@ -78,6 +78,10 @@ class _CConvNd(nn.Module):
         return torch.stack((r, i), dim=1)
 
 
+def CConv1d(*args, **kwargs):
+    return _CConvNd(nn.Conv1d, *args, **kwargs)
+
+
 def CConv2d(*args, **kwargs):
     return _CConvNd(nn.Conv2d, *args, **kwargs)
 

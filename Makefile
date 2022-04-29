@@ -2,7 +2,7 @@ all: install
 
 install:
 	@pip3 wheel --no-deps .
-	@rename 's/none-any/manylinux1_x86_64/' *.whl
+	@rename 's/py3-none-any/cp310-cp310-manylinux1_x86_64/' *.whl
 
 clean:
 	@echo "cleaning..."

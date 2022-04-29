@@ -5,16 +5,57 @@ from torch.nn.common_types import _size_4_t
 from typing import Optional
 
 
+def _output_size(
+    size: int, padding: int, dilation: int, kernel_size: int, stride: int
+) -> int:
+    if padding is None:
+        return size
+    return (size + 2 * padding - dilation * (kernel_size - 1) - 1) // stride + 1
+
+
+def _pooling_size(
+    size: int, padding: int, kernel_size: int, stride: int, ceil_mode: bool
+) -> int:
+    num = size + 2 * padding - kernel_size
+    if ceil_mode:
+        return -(-num // stride) + 1
+    return num // stride + 1
+
+
 def avg_pool4d(
-    input,
-    kernel_size,
-    stride=None,
-    padding=0,
-    ceil_mode=False,
-    count_include_pad=True,
-    divisor_override=None,
+    input: Tensor,
+    kernel_size: _size_4_t,
+    stride: _size_4_t = None,
+    padding: _size_4_t = 0,
+    ceil_mode: bool = False,
+    count_include_pad: bool = True,
+    divisor_override: int = None,
 ) -> Tensor:
-    pass
+    if stride is None:
+        stride = kernel_size
+    divisor = kernel_size[0] if divisor_override is None else divisor_override
+    b_i, c_i, l_i, d_i, h_i, w_i = input.shape
+    l_o = _pooling_size(l_i, padding[0], kernel_size[0], stride[0], ceil_mode)
+    d_o = _pooling_size(d_i, padding[1], kernel_size[1], stride[1], ceil_mode)
+    h_o = _pooling_size(h_i, padding[2], kernel_size[2], stride[2], ceil_mode)
+    w_o = _pooling_size(w_i, padding[3], kernel_size[3], stride[3], ceil_mode)
+    o_t = torch.zeros((b_i, c_i, l_o, d_o, h_o, w_o))
+    for i in range(l_o):
+        for j in range(kernel_size[0]):
+            n = stride[0] * i + j
+            if n >= l_i:
+                continue
+            o_t[:, :, i] += F.avg_pool3d(
+                input[:, :, n],
+                kernel_size[1:],
+                stride[1:],
+                padding[1:],
+                ceil_mode,
+                count_include_pad,
+                divisor_override,
+            )
+        o_t[:, :, i] /= divisor
+    return o_t
 
 
 def conv4d(
@@ -34,11 +75,7 @@ def conv4d(
     else:
         padding_ = padding
         pad_ = 0 if padding == "valid" else None
-
-    if pad_ is None:
-        l_o = l_i
-    else:
-        l_o = (l_i + 2 * pad_ - dilation[0] * (l_k - 1) - 1) // stride[0] + 1
+    l_o = _output_size(l_i, pad_, dilation[0], l_k, stride[0])
     o_f = l_o * [None]
     for i in range(l_k):
         for j in range(l_i):
@@ -46,8 +83,8 @@ def conv4d(
             if n < 0 or n >= l_o:
                 continue
             f = F.conv3d(
-                input[:, :, j, :],
-                weight[:, :, i, :, :],
+                input[:, :, j],
+                weight[:, :, i],
                 bias,
                 stride[1:],
                 padding_,

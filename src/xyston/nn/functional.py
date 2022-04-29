@@ -39,12 +39,15 @@ def avg_pool4d(
     d_o = _pooling_size(d_i, padding[1], kernel_size[1], stride[1], ceil_mode)
     h_o = _pooling_size(h_i, padding[2], kernel_size[2], stride[2], ceil_mode)
     w_o = _pooling_size(w_i, padding[3], kernel_size[3], stride[3], ceil_mode)
-    o_t = torch.zeros((b_i, c_i, l_o, d_o, h_o, w_o))
+    o_t = torch.zeros(
+        (b_i, c_i, l_o, d_o, h_o, w_o),
+        dtype=input.dtype,
+        layout=input.layout,
+        device=input.device,
+    )
     for i in range(l_o):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j
-            if n >= l_i:
-                continue
             o_t[:, :, i] += F.avg_pool3d(
                 input[:, :, n],
                 kernel_size[1:],

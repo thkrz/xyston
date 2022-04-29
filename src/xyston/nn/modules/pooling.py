@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torch.nn.common_types import _size_4_t
-from torch.nn.modules.pooling import _AvgPoolNd
+from torch.nn.modules.pooling import _AvgPoolNd, _MaxPoolNd
 from torch.nn.modules.utils import _quadruple
 
 from .. import functional as F
@@ -38,6 +38,24 @@ class AvgPool4d(_AvgPoolNd):
             self.padding,
             self.ceil_mode,
             self.count_include_pad,
+        )
+
+
+class MaxPool4d(_MaxPoolNd):
+    kernel_size: _size_4_t
+    stride: _size_4_t
+    padding: _size_4_t
+    dilation: _size_4_t
+
+    def forward(self, input: Tensor):
+        return F.max_pool4d(
+            input,
+            self.kernel_size,
+            self.stride,
+            self.padding,
+            self.dilation,
+            self.ceil_mode,
+            self.return_indices,
         )
 
 

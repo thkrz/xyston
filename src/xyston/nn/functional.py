@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor
 from torch.nn.common_types import _size_4_t
+from torch.nn.modules.utils import _quadruple
 from typing import Optional
 
 
@@ -118,6 +119,10 @@ def max_pool4d(
     ceil_mode: bool = False,
     return_indices: bool = False,
 ) -> Tensor:
+    kernel_size = _quadruple(kernel_size)
+    stride = kernel_size if stride is None else _quadruple(stride)
+    padding = _quadruple(padding)
+    dilation = _quadruple(dilation)
     b_i, c_i, l_i, d_i, h_i, w_i = input.shape
     l_o = _output_size(
         l_i, padding[0], dilation[0], kernel_size[0], stride[0], ceil_mode
@@ -151,10 +156,12 @@ def max_pool4d(
                 kernel_size[1:],
                 stride[1:],
                 padding[1:],
+                dilation[1:],
                 ceil_mode,
                 return_indices,
             )
-        o_t[:, :, i] = torch.max(k_t, 2, keepdim=True)
+        m = torch.max(k_t, 2, keepdim=True)
+        o_t[:, :, i] = m.values
     del k_t
     return o_t
 

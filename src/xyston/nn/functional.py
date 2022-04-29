@@ -5,6 +5,18 @@ from torch.nn.common_types import _size_4_t
 from typing import Optional
 
 
+def avg_pool4d(
+    input,
+    kernel_size,
+    stride=None,
+    padding=0,
+    ceil_mode=False,
+    count_include_pad=True,
+    divisor_override=None,
+) -> Tensor:
+    pass
+
+
 def conv4d(
     input: Tensor,
     weight: Tensor,

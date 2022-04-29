@@ -1,4 +1,4 @@
-all: install upload
+all: install
 
 install:
 	@pip3 wheel --no-deps .
@@ -9,4 +9,4 @@ clean:
 	@rm -rf build/ src/xyston.egg-info *.whl
 	@find src/ -name '__pycache__' -type d -exec rm -rf {} \;
 
-.PHONY: clean install upload
+.PHONY: clean install

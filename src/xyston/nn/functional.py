@@ -5,30 +5,7 @@ from torch.nn.common_types import _size_4_t
 from torch.nn.modules.utils import _quadruple
 from typing import Optional
 
-
-def _output_size(
-    size: int,
-    padding: int,
-    dilation: int,
-    kernel_size: int,
-    stride: int,
-    ceil_mode: bool = False,
-) -> int:
-    if padding is None:
-        return size
-    num = size + 2 * padding - dilation * (kernel_size - 1) - 1
-    if ceil_mode:
-        return -(-num // stride) + 1
-    return num // stride + 1
-
-
-def _pooling_size(
-    size: int, padding: int, kernel_size: int, stride: int, ceil_mode: bool
-) -> int:
-    num = size + 2 * padding - kernel_size
-    if ceil_mode:
-        return -(-num // stride) + 1
-    return num // stride + 1
+from .utils import _output_size, _output_size_4_t, _pooling_size_4_t
 
 
 def avg_pool4d(
@@ -43,18 +20,14 @@ def avg_pool4d(
     if stride is None:
         stride = kernel_size
     divisor = kernel_size[0] if divisor_override is None else divisor_override
-    b_i, c_i, l_i, d_i, h_i, w_i = input.shape
-    l_o = _pooling_size(l_i, padding[0], kernel_size[0], stride[0], ceil_mode)
-    d_o = _pooling_size(d_i, padding[1], kernel_size[1], stride[1], ceil_mode)
-    h_o = _pooling_size(h_i, padding[2], kernel_size[2], stride[2], ceil_mode)
-    w_o = _pooling_size(w_i, padding[3], kernel_size[3], stride[3], ceil_mode)
+    shape = _pooling_size_4_t(input.shape, padding, kernel_size, stride, ceil_mode)
     o_t = torch.zeros(
-        (b_i, c_i, l_o, d_o, h_o, w_o),
+        shape,
         dtype=input.dtype,
         layout=input.layout,
         device=input.device,
     )
-    for i in range(l_o):
+    for i in range(shape[2]):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j
             o_t[:, :, i] += F.avg_pool3d(
@@ -123,39 +96,29 @@ def max_pool4d(
     stride = kernel_size if stride is None else _quadruple(stride)
     padding = _quadruple(padding)
     dilation = _quadruple(dilation)
-    b_i, c_i, l_i, d_i, h_i, w_i = input.shape
-    l_o = _output_size(
-        l_i, padding[0], dilation[0], kernel_size[0], stride[0], ceil_mode
-    )
-    d_o = _output_size(
-        d_i, padding[1], dilation[1], kernel_size[1], stride[1], ceil_mode
-    )
-    h_o = _output_size(
-        h_i, padding[2], dilation[2], kernel_size[2], stride[2], ceil_mode
-    )
-    w_o = _output_size(
-        w_i, padding[3], dilation[3], kernel_size[3], stride[3], ceil_mode
+    shape = _output_size_4_t(
+        input.shape, padding, dilation, kernel_size, stride, ceil_mode
     )
     o_t = torch.zeros(
-        (b_i, c_i, l_o, d_o, h_o, w_o),
+        shape,
         dtype=input.dtype,
         layout=input.layout,
         device=input.device,
     )
     if return_indices:
         i_t = torch.zeros(
-            (b_i, c_i, l_o, d_o, h_o, w_o),
+            shape,
             dtype=int,
             layout=input.layout,
             device=input.device,
         )
     k_t = torch.zeros(
-        (b_i, c_i, kernel_size[0], d_o, h_o, w_o),
+        shape,
         dtype=input.dtype,
         layout=input.layout,
         device=input.device,
     )
-    for i in range(l_o):
+    for i in range(shape[2]):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j
             k_t[:, :, j] = F.max_pool3d(

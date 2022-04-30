@@ -60,13 +60,13 @@ class MaxPool4d(_MaxPoolNd):
 
 
 class _CAvgPoolNd(nn.Module):
-    def __init__(self, cls, *args, **kwargs):
+    def __init__(self, cls, *args, **kwargs) -> None:
         super(_CAvgPoolNd, self).__init__()
-        self.pooling = cls(*args, **kwargs)
+        self.pool = cls(*args, **kwargs)
 
     def forward(self, input: Tensor) -> Tensor:
-        r = self.pooling(input[:, 0])
-        i = self.pooling(input[:, 1])
+        r = self.pool(input[:, 0])
+        i = self.pool(input[:, 1])
         return torch.stack((r, i), dim=1)
 
 
@@ -84,3 +84,17 @@ def CAvgPool3d(*args, **kwargs):
 
 def CAvgPool4d(*args, **kwargs):
     return _CAvgPoolNd(AvgPool4d, *args, **kwargs)
+
+
+class CMaxPool4d(nn.Module):
+    def __init__(self, *args, **kwargs) -> None:
+        super(CMaxPool4d, self).__init__()
+        kwargs.update({"return_indices": True})
+        self.pool = MaxPool4d(*args, **kwargs)
+
+    def forward(self, input: Tensor) -> Tensor:
+        r = input[:, 0]
+        i = input[:, 1]
+        x = F.modulus(input)
+        _, idx = self.pool(x)
+        return torch.stack((r[idx], i[idx]), dim=1)

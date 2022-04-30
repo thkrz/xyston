@@ -88,7 +88,7 @@ def conv4d(
         padding_ = padding
         pad_ = 0 if padding == "valid" else None
     l_o = _output_size(l_i, pad_, dilation[0], l_k, stride[0])
-    o_f = l_o * [None]
+    o_t = l_o * [None]
     for i in range(l_k):
         for j in range(l_i):
             n = j - (i - l_k // 2) - (l_i - l_o) // 2
@@ -103,11 +103,11 @@ def conv4d(
                 dilation[1:],
                 groups,
             )
-            if o_f[n] is None:
-                o_f[n] = f
+            if o_t[n] is None:
+                o_t[n] = f
             else:
-                o_f[n] += f
-    return torch.stack(o_f, dim=2)
+                o_t[n] += f
+    return torch.stack(o_t, dim=2)
 
 
 def max_pool4d(
@@ -142,6 +142,13 @@ def max_pool4d(
         layout=input.layout,
         device=input.device,
     )
+    if return_indices:
+        i_t = torch.zeros(
+            (b_i, c_i, l_o, d_o, h_o, w_o),
+            dtype=int,
+            layout=input.layout,
+            device=input.device,
+        )
     k_t = torch.zeros(
         (b_i, c_i, kernel_size[0], d_o, h_o, w_o),
         dtype=input.dtype,
@@ -158,11 +165,15 @@ def max_pool4d(
                 padding[1:],
                 dilation[1:],
                 ceil_mode,
-                return_indices,
+                False,
             )
         m = torch.max(k_t, 2, keepdim=True)
         o_t[:, :, i] = m.values
+        if return_indices:
+            i_t[:, :, i] = m.indices
     del k_t
+    if return_indices:
+        return o_t, i_t
     return o_t
 
 

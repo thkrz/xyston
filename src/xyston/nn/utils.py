@@ -1,5 +1,5 @@
 import torch
-from torch.nn.common_types import _size_4_t, _size_6_t
+from torch.nn.common_types import _size_4_t, _size_any_t
 
 
 def _div(numerator: int, denominator: int, ceil_mode: bool) -> int:
@@ -9,7 +9,7 @@ def _div(numerator: int, denominator: int, ceil_mode: bool) -> int:
 
 
 def _output_shape(
-    size: _size_6_t,
+    size: _size_any_t,
     padding: _size_4_t,
     dilation: _size_4_t,
     kernel_size: _size_4_t,
@@ -50,7 +50,7 @@ def _output_shape(
 
 
 def _pooling_output_shape(
-    size: _size_6_t,
+    size: _size_any_t,
     padding: _size_4_t,
     dilation: _size_4_t,
     kernel_size: _size_4_t,

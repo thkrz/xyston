@@ -8,7 +8,7 @@ def _div(numerator: int, denominator: int, ceil_mode: bool) -> int:
     return numerator // denominator
 
 
-def _output_shape(
+def output_shape(
     size: _size_any_t,
     padding: _size_4_t,
     dilation: _size_4_t,
@@ -49,7 +49,7 @@ def _output_shape(
     )
 
 
-def _pooling_output_shape(
+def pooling_output_shape(
     size: _size_any_t,
     padding: _size_4_t,
     dilation: _size_4_t,
@@ -76,7 +76,7 @@ def _pooling_output_shape(
     )
 
 
-def _zeros_like(input, shape=None, dtype=None):
+def zeros_like(input, shape=None, dtype=None):
     dtype = input.dtype if dtype is None else dtype
     shape = input.shape if shape is None else shape
     return torch.zeros(

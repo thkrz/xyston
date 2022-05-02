@@ -5,7 +5,7 @@ from torch.nn.common_types import _size_4_t
 from torch.nn.modules.utils import _quadruple
 from typing import Optional
 
-from .utils import _output_shape, _pooling_output_shape, _zeros_like
+from .utils import output_shape, pooling_output_shape, zeros_like
 
 
 def avg_pool4d(
@@ -20,8 +20,8 @@ def avg_pool4d(
     if stride is None:
         stride = kernel_size
     divisor = kernel_size[0] if divisor_override is None else divisor_override
-    shape = _pooling_output_shape(input.shape, padding, kernel_size, stride, ceil_mode)
-    o_t = _zeros_like(input, shape=shape)
+    shape = pooling_output_shape(input.shape, padding, kernel_size, stride, ceil_mode)
+    o_t = zeros_like(input, shape=shape)
     for i in range(shape[2]):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j
@@ -55,7 +55,7 @@ def conv4d(
     else:
         padding_ = padding
         pad_ = 0 if padding == "valid" else None
-    l_o = _output_shape(l_i, pad_, dilation[0], l_k, stride[0])
+    l_o = output_shape(l_i, pad_, dilation[0], l_k, stride[0])
     o_t = l_o * [None]
     for i in range(l_k):
         for j in range(l_i):
@@ -91,13 +91,13 @@ def max_pool4d(
     stride = kernel_size if stride is None else _quadruple(stride)
     padding = _quadruple(padding)
     dilation = _quadruple(dilation)
-    shape = _output_shape(
+    shape = output_shape(
         input.shape, padding, dilation, kernel_size, stride, ceil_mode
     )
-    o_t = _zeros_like(input, shape=shape)
+    o_t = zeros_like(input, shape=shape)
     if return_indices:
-        i_t = _zeros_like(input, shape=shape, dtype=int)
-    k_t = _zeros_like(input, shape=shape)
+        i_t = zeros_like(input, shape=shape, dtype=int)
+    k_t = zeros_like(input, shape=shape)
     for i in range(shape[2]):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j

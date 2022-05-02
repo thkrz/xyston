@@ -1,3 +1,4 @@
+import torch
 from torch.nn.common_types import _size_4_t, _size_6_t
 
 
@@ -72,4 +73,15 @@ def _pooling_output_shape(
             shape(size[i], padding[i], kernel_size[i], stride[i], ceil_mode)
             for i in range(4)
         ]
+    )
+
+
+def _zeros_like(input, shape=None, dtype=None):
+    dtype = input.dtype if dtype is None else dtype
+    shape = input.shape if shape is None else shape
+    return torch.zeros(
+        shape,
+        dtype=dtype,
+        layout=input.layout,
+        device=input.device,
     )

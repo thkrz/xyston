@@ -96,5 +96,6 @@ class CMaxPool4d(nn.Module):
         r = input[:, 0]
         i = input[:, 1]
         x = F.modulus(input)
-        _, idx = self.pool(x)
-        return torch.stack((r[idx], i[idx]), dim=1)
+        _, index = self.pool(x)
+        print(index)
+        return torch.stack((torch.take(r, index), torch.take(i, index)), dim=1)

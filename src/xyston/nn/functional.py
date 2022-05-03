@@ -93,9 +93,7 @@ def max_pool4d(
     stride = kernel_size if stride is None else _quadruple(stride)
     padding = _quadruple(padding)
     dilation = _quadruple(dilation)
-    shape = output_shape(
-        input.shape, padding, dilation, kernel_size, stride, ceil_mode
-    )
+    shape = output_shape(input.shape, padding, dilation, kernel_size, stride, ceil_mode)
     o_t = zeros_like(input, shape=shape)
     if return_indices:
         i_t = zeros_like(input, shape=shape, dtype=int)

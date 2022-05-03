@@ -8,10 +8,11 @@ import xyston.nn as xy
 
 class Test(unittest.TestCase):
     def test_max_pool(self):
-        x = torch.tensor(np.random.rand(1, 1, 4, 4, 4, 4))
-        p = xy.MaxPool4d((2, 2, 2, 2))
+        x = torch.tensor(np.random.rand(1, 2, 1, 4, 4, 4, 4))
+        p = xy.CMaxPool4d(2)
         y = p(x)
-        print(x.shape, y.shape)
+        print(y)
+        print(y.shape)
 
 
 if __name__ == "__main__":

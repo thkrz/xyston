@@ -25,6 +25,8 @@ def avg_pool4d(
     for i in range(shape[2]):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j
+            if n >= input.shape[2]:
+                continue
             o_t[:, :, i] += F.avg_pool3d(
                 input[:, :, n],
                 kernel_size[1:],
@@ -101,6 +103,8 @@ def max_pool4d(
     for i in range(shape[2]):
         for j in range(kernel_size[0]):
             n = stride[0] * i + j
+            if n >= input.shape[2]:
+                continue
             k_t[:, :, j] = F.max_pool3d(
                 input[:, :, n],
                 kernel_size[1:],

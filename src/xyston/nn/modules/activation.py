@@ -28,7 +28,7 @@ class CReLU(nn.Module):
 
 class zReLU(nn.Module):
     def __init__(self):
-        super(CReLU, self).__init__()
+        super(zReLU, self).__init__()
 
     def forward(self, input: Tensor) -> Tensor:
         return G.zrelu(input)

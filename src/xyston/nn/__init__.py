@@ -16,4 +16,5 @@ from .modules.pooling import CAvgPool1d
 from .modules.pooling import CAvgPool2d
 from .modules.pooling import CAvgPool3d
 from .modules.pooling import CAvgPool4d
+from .modules.pooling import CMaxPool4d
 from .modules.pooling import MaxPool4d

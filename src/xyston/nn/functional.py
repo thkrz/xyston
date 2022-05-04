@@ -113,9 +113,9 @@ def max_pool4d(
                 False,
             )
         m = torch.max(k_t, 2, keepdim=True)
-        o_t[:, :, i] = m.values
+        o_t[:, :, i] = m.values[:, :, 0]
         if return_indices:
-            i_t[:, :, i] = m.indices
+            i_t[:, :, i] = m.indices[:, :, 0]
     del k_t
     if return_indices:
         return o_t, i_t

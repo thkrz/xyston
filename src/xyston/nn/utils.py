@@ -22,7 +22,7 @@ def output_shape(
         dilation: int,
         kernel_size: int,
         stride: int,
-        ceil_mode: bool = False,
+        ceil_mode: bool,
     ) -> int:
         num = size + 2 * padding - dilation * (kernel_size - 1) - 1
         return _div(num, stride, ceil_mode) + 1
@@ -52,10 +52,9 @@ def output_shape(
 def pooling_output_shape(
     size: _size_any_t,
     padding: _size_4_t,
-    dilation: _size_4_t,
     kernel_size: _size_4_t,
     stride: _size_4_t,
-    ceil_mode: bool,
+    ceil_mode: bool = False,
 ) -> _size_4_t:
     def shape(
         size: int, padding: int, kernel_size: int, stride: int, ceil_mode: bool

@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torch import Tensor
-from torch.nn.common_types import _size_4_t
+from torch.nn.common_types import _size_2_t, _size_4_t
 from torch.nn.modules.utils import _quadruple
 from typing import Optional
 
@@ -120,6 +120,20 @@ def max_pool4d(
     if return_indices:
         return o_t, i_t
     return o_t
+
+
+def window_select2d(
+    input: Tensor,
+    kernel_size: _size_2_t,
+    stride: _size_2_t,
+    out: Tensor,
+) -> Tensor:
+    m = kernel_size[0] // 2
+    n = kernel_size[1] // 2
+    for h in range(out.shape[2]):
+        for w in range(out.shape[3]):
+            out[:, :, h, w] = input[:, :, stride[0] * h + m, stride[1] * w + n]
+    return out
 
 
 def modulus(input: Tensor) -> Tensor:

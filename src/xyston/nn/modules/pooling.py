@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as G
 from torch import Tensor
 from torch.nn.common_types import _size_4_t
 from torch.nn.modules.pooling import _AvgPoolNd, _MaxPoolNd
@@ -57,6 +58,24 @@ class MaxPool4d(_MaxPoolNd):
             self.ceil_mode,
             self.return_indices,
         )
+
+
+class TpiPool2d(nn.AvgPool2d):
+    def __init__(self, *args, **kwargs) -> None:
+        super(TpiPool2d, self).__init__(*args, **kwargs)
+
+    def forward(self, input: Tensor) -> Tensor:
+        A = G.avg_pool2d(
+            input,
+            self.kernel_size,
+            self.stride,
+            self.padding,
+            self.ceil_mode,
+            self.count_include_pad,
+            self.divisor_override,
+        )
+        B = torch.zeros(A.shape)
+        return F.window_select2d(input, self.kernel_size, self.stride, B) - A
 
 
 class _CAvgPoolNd(nn.Module):

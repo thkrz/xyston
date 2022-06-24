@@ -68,13 +68,19 @@ class Conv4d(nn.modules.conv._ConvNd):
 class _CConvNd(nn.Module):
     def __init__(self, cls, *args, **kwargs) -> None:
         super(_CConvNd, self).__init__()
-        self.conv = cls(*args, **kwargs)
+        kernel_size = tuple(zip(*kwargs["kernel_size"]))
+        kwargs["kernel_size"] = kernel_size[0]
+        self.conv_r = cls(*args, **kwargs)
+        kwargs["kernel_size"] = kernel_size[1]
+        self.conv_i = cls(*args, **kwargs)
 
     def forward(self, input: Tensor) -> Tensor:
-        m_r = self.conv(input[:, 0])
-        m_i = self.conv(input[:, 1])
-        r = m_r - m_i
-        i = m_i + m_r
+        xa = self.conv_r(input[:, 0])
+        ya = self.conv_r(input[:, 1])
+        xb = self.conv_i(input[:, 0])
+        yb = self.conv_i(input[:, 1])
+        r = xa - yb
+        i = xb + ya
         return torch.stack((r, i), dim=1)
 
 

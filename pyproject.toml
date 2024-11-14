@@ -1,6 +1,30 @@
 [build-system]
-requires = [
-  "setuptools>=42",
-  "wheel"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "xyston"
+version = "0.0.3"
+authors = [
+  { name="Thomas Kreuzer", email="thomas.kreuzer@rwth-aachen.de" },
 ]
-build-backend = "setuptools.build_meta"
+description = "Artificial intelligence toolkit for complex 4D-Convolution"
+readme = "README.md"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/thkrz/xyston"
